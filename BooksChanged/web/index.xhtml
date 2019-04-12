@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <title>Books manager</title>
+</h:head>
+<h:body>
+
+    <h:form >
+        <h:panelGrid columns="2">
+            Imie:
+            <h:inputText id="name" value="#{bookManager.name}" required="true" requiredMessage="Pole jest wymagane"/>
+            Nazwisko:
+            <h:inputText id="surname" value="#{bookManager.surname}" required="true" requiredMessage="Pole jest wymagane"/>
+            Tytuł:
+            <h:inputText id="title" value="#{bookManager.title}" required="true" requiredMessage="Pole jest wymagane"/>
+            ISBN:
+            <h:inputText id="isbn" value="#{bookManager.isbn}" required="true" requiredMessage="Pole jest wymagane"/>
+            Rok:
+            <h:inputText id="year" value="#{bookManager.year}" required="true" validatorMessage="Rok z przedziału 1000-2019" requiredMessage="Pole jest wymagane">
+                <f:validateLongRange minimum="1000" maximum="2019"/>
+            </h:inputText>
+            Cena:
+            <h:inputText id="price" value="#{bookManager.price}" required="true" requiredMessage="Pole jest wymagane"/>
+        </h:panelGrid>
+
+        <h:messages/>
+
+        <h:commandButton value="Wyślij" type="submit" action="#{bookManager.add}"/>
+    </h:form>
+
+    <br/>
+
+    <h:form id="delete">
+        Podaj ISBN książki do usunięcia:
+        <h:inputText id="deleteISBN" value="#{bookManager.deleteISBN}" required="true" requiredMessage="Podaj ISBN książki do usunięcia"/>
+        <h:commandButton type="submit" value="Usuń" action="#{bookManager.deleteBook}"/>
+    </h:form>
+
+    <br/>
+
+    <h:form >
+    <h:panelGrid columns="2">
+        Podaj ISBN książki, którą chcesz zmodyfikować:
+        <h:inputText id="changeisbn" value="#{bookManager.changeISBN}" required="true" requiredMessage="Pole jest wymagane"/>
+
+        Imie:
+        <h:inputText id="changeName" value="#{bookManager.changeName}"/>
+        Nazwisko:
+        <h:inputText id="changeSurname" value="#{bookManager.changeSurname}"/>
+        Tytuł:
+        <h:inputText id="changeTitle" value="#{bookManager.changeTitle}"/>
+        Rok:
+        <h:inputText id="changeYear" value="#{bookManager.changeYear}" validatorMessage="Rok z przedziału 1000-2019">
+            <f:validateLongRange minimum="1000" maximum="2019"/>
+        </h:inputText>
+        Cena:
+        <h:inputText id="changePrice" value="#{bookManager.changePrice}"/>
+    </h:panelGrid>
+    <h:commandButton value="Zmień" type="submit" action="#{bookManager.change}"/>
+        <h:messages/>
+    </h:form>
+
+    <h:form>
+        <h:dataTable value="#{bookManager.books}" var="b" styleClass="order-table"
+                     headerClass="order-table-header"
+                     rowClasses="order-table-odd-row,order-table-even-row">
+
+            <h:column>
+                <f:facet name="header">Imię</f:facet>
+                #{b.name}
+            </h:column>
+
+            <h:column>
+                <f:facet name="header">Nazwisko</f:facet>
+                #{b.surname}
+            </h:column>
+
+            <h:column>
+                <f:facet name="header">Tytuł</f:facet>
+                #{b.title}
+            </h:column>
+
+            <h:column>
+                <f:facet name="header">ISBN</f:facet>
+                #{b.ISBN}
+            </h:column>
+
+            <h:column>
+                <f:facet name="header">Rok</f:facet>
+                #{b.year}
+            </h:column>
+
+            <h:column>
+                <f:facet name="header">Cena</f:facet>
+                #{b.price}
+            </h:column>
+        </h:dataTable>
+    </h:form>
+
+
+
+
+</h:body>
+
+
+</html>
