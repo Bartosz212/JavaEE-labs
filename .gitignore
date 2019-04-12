@@ -1,0 +1,17 @@
+.gradle
+.idea/
+.vertx/
+*.iml
+.DS_Store
+
+**/.idea/
+**/build/
+**/out/
+
+local-repo/
+*.jar
+*.ipr
+*.iws
+
+tmp/
+**/target/

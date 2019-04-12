@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+<h:head>
+   <title>Books manager</title>
+</h:head>
+<h:body>
+
+   <div class="ApplicationWrapper">
+      <h:panelGroup id="bookTable">
+         <table border="1">
+            <tr>
+               <td>Title</td>
+               <td>Author</td>
+               <td>Genre</td>
+               <td>Price</td>
+               <td>Currency</td>
+               <td>Number of pages</td>
+            </tr>
+
+            <ui:repeat value="#{bookCatalog.filteredBooks}"
+                       var="book">
+               <tr>
+                  <td>#{book.title}</td>
+                  <td>#{book.author}</td>
+                  <td>#{book.genre}</td>
+                  <td>#{book.price}</td>
+                  <td>#{book.currency}</td>
+                  <td>#{book.numberOfPages}</td>
+                  <td ><input class="checkbox" type="checkbox" /></td>
+               </tr>
+
+            </ui:repeat>
+         </table>
+      </h:panelGroup>
+
+
+      <button onclick="calculatePrice()">Calculate price</button>
+
+      <h:panelGrid class="filtersWrapper">
+         <h:form style="display: flex; flex-direction: column" >
+            Minimal price:
+            <h:inputText id="lowBorder" placeholder="Minimal value" type="number" value="#{bookCatalog.lowBorder}"/>
+            Maximal price:
+            <h:inputText id="highBorder" placeholder="Maximal value" type="number" value="#{bookCatalog.highBorder}"/>
+            Name:
+            <h:inputText id="titleFragment" placeholder="Title" type="text" value="#{bookCatalog.titleFragment}"/>
+            Category:
+            <h:inputText id="categoryFragment" placeholder="Category" type="text" value="#{bookCatalog.categoryFragment}"/>
+
+            <h:selectOneMenu id="currency" value="#{bookCatalog.currency}">
+               <f:selectItem itemValue="PLN" itemLabel="PLN"/>
+               <f:selectItem itemValue="original" itemLabel="Original"/>
+            </h:selectOneMenu>
+
+            <h:commandButton value="Search">
+               <f:ajax execute="lowBorder highBorder currency titleFragment categoryFragment" update="bookTable" render="bookTable"/>
+            </h:commandButton>
+         </h:form>
+      </h:panelGrid>
+
+      <div>
+         <h2 id="total-price"> </h2>
+         <h2 id="number"> </h2>
+      </div>
+   </div>
+</h:body>
+
+<script type="text/javascript">
+   function calculatePrice() {
+      var checkboxes = document.getElementsByClassName("checkbox");
+      var counter = 0;
+      var totalPrice = 0;
+      console.log(checkboxes);
+      for(var i =0; i &lt;checkboxes.length; i++){
+         var checkbox = checkboxes[i];
+         if(checkbox.checked){
+            counter++;
+            totalPrice +=parseFloat(checkbox.parentNode.previousSibling.previousSibling.previousSibling.previousSibling.previousSibling.previousElementSibling.firstChild.nodeValue);
+         }
+      }
+      document.getElementById("total-price").innerText = "Total price:"+totalPrice.toString();
+      document.getElementById("number").innerText = "You ordered:" + counter +" books";
+   }
+</script>
+</html>

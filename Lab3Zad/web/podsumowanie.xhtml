@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+<h:head>
+    <title>Wynik ankiety</title>
+</h:head>
+<h:body>
+    <h:form>
+        <h:panelGrid columns="2">
+            Imie:
+            <h:outputText value="#{shop.name}"/>
+            Mail:
+            <h:outputText value="#{shop.mail}"/>
+            Wiek:
+            <h:outputText value="#{shop.age}"/>
+            Płeć:
+            <h:outputText value="Mężczyzna" rendered="#{shop.sex.equals('m')}"/>
+            <h:outputText value="Kobieta" rendered="#{shop.sex.equals('f')}"/>
+            Wykształcenie:
+            <h:outputText value="#{shop.education}"/>
+            Wzrost:
+            <h:outputText value="#{shop.height}"/>
+            <h:outputText value="Obwód biustu:" rendered="#{shop.sex.equals('f')}"/>
+            <h:outputText value="#{shop.bust}" rendered="#{shop.sex.equals('f')}"/>
+            <h:outputText value="Wielkość miseczki:" rendered="#{shop.sex.equals('f')}"/>
+            <h:outputText value="#{shop.cup}" rendered="#{shop.sex.equals('f')}"/>
+            <h:outputText value="Obwód w talii:" rendered="#{shop.sex.equals('f')}"/>
+            <h:outputText value="#{shop.waistFemale}" rendered="#{shop.sex.equals('f')}"/>
+            <h:outputText value="Obwód biodra:" rendered="#{shop.sex.equals('f')}"/>
+            <h:outputText value="#{shop.hips}" rendered="#{shop.sex.equals('f')}"/>
+            <h:outputText value="Obwód klatki:" rendered="#{shop.sex.equals('m')}"/>
+            <h:outputText value="#{shop.chest}" rendered="#{shop.sex.equals('m')}"/>
+            <h:outputText value="Obwód w pasie:" rendered="#{shop.sex.equals('m')}"/>
+            <h:outputText value="#{shop.waistMale}" rendered="#{shop.sex.equals('m')}"/>
+            Pytanie 1:
+            <h:outputText value="#{shop.question1}"/>
+            Pytanie 2:
+            <h:outputText value="#{shop.question2}"/>
+            Pytanie 3:
+            <h:outputText value="#{shop.question3}"/>
+            Pytanie 4:
+            <h:outputText value="#{shop.getQuestion4String()}"/>
+        </h:panelGrid>
+    </h:form>
+    <h:panelGroup id="adv">
+        <c:set value="#{advertisment.imgPath}" target="#{advertismentSession}" property="path" />
+
+        Ilość kliknięć:
+        <h:outputText id="numb" value="#{advertisment.numberOfClicks(advertismentSession.path)}"/>
+
+        <h:graphicImage value="#{advertismentSession.path}" width="200px" >
+            <f:ajax event="click" listener="#{advertisment.onClick(advertismentSession.path)}" render="adv" />
+        </h:graphicImage>
+    </h:panelGroup>
+</h:body>
+</html>

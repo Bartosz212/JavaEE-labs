@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<f:view>
+    <h1>Witaj w bibliotece</h1>
+</f:view>
+
+<h:body>
+    <br/>
+    <h2>Zalogowany jako: #{loggedView.userFullName} </h2>
+
+    <h3>Log Twoich wypożyczeń:</h3>
+    <h:form>
+        <h:dataTable value="#{loggedView.loans}" var="loan" styleClass="order-table"
+                     headerClass="order-table-header"
+                     rowClasses="order-table-odd-row,order-table-even-row" style="border-spacing: 8px">
+
+            <h:column>
+                <f:facet name="header">Tytuł</f:facet>
+                #{loggedView.getBookTitle(loan.bookID.id)}
+            </h:column>
+
+            <h:column>
+                <f:facet name="header">Autor</f:facet>
+                #{loggedView.getAuthorFullNameByBookID(loan.bookID.id)}
+            </h:column>
+
+
+            <h:column>
+                <f:facet name="header">Od</f:facet>
+                #{loan.formattedLoanDate}
+            </h:column>
+
+            <h:column>
+                <f:facet name="header">Do</f:facet>
+                #{loan.formattedReturnDate}
+            </h:column>
+
+            <h:column>
+                <f:facet name="header">Status</f:facet>
+                #{loan.getStatus()}
+            </h:column>
+
+            <h:column>
+                <f:facet name="header">Zakończ</f:facet>
+                <h:selectBooleanCheckbox value="#{loggedView.checked[loan.id]}" disabled="#{!loan.loaned}"/>
+            </h:column>
+        </h:dataTable>
+        <h:commandButton value="Zakończ wypożyczenie" type="submit" action="#{loggedView.endLoans}"/>
+    </h:form>
+
+    <br/>
+
+    <h3>Dodaj autora:</h3>
+    <h:form>
+        Imie autora:
+        <h:inputText id="name" value="#{loggedView.authorName}" required="true" requiredMessage="Pole jest wymagane"/>
+        Nazwisko autora:
+        <h:inputText id="surname" value="#{loggedView.authorSurname}" required="true" requiredMessage="Pole jest wymagane"/>
+
+        <h:commandButton value="Dodaj" type="submit" action="#{loggedView.addAuthor}"/>
+    </h:form>
+
+    <h3>Usuń lub edytuj autora:</h3>
+    <h:form>
+        <h:selectOneMenu value="#{loggedView.pickedAuthor}" required="true">
+            <f:selectItems value="#{loggedView.authors}" var="author" itemLabel="#{author.fullName}" itemValue="#{author.id}"/>
+        </h:selectOneMenu>
+        Edytuj imię:
+        <h:inputText id="editName" value="#{loggedView.editName}"/>
+        Edytuj nazwisko:
+        <h:inputText id="editSurname" value="#{loggedView.editSurname}"/>
+        <h:commandButton value="Usuń" type="submit" action="#{loggedView.deleteAuthor}"/>
+        <h:commandButton value="Edytuj" type="submit" action="#{loggedView.editAuthor}"/>
+    </h:form>
+
+    <h3>Dodaj ksiazkę:</h3>
+    <h:form>
+        Autor:
+        <h:selectOneMenu value="#{loggedView.pickedAuthor}" required="true">
+            <f:selectItems value="#{loggedView.authors}" var="author" itemLabel="#{author.fullName}" itemValue="#{author.id}"/>
+        </h:selectOneMenu>
+        Tytuł:
+        <h:inputText id="title" value="#{loggedView.title}" required="true" requiredMessage="Pole jest wymagane"/>
+        Ilość egzemplarzy:
+        <h:inputText id="number" value="#{loggedView.numberOfBooks}" required="true" requiredMessage="Pole jest wymagane">
+            <f:validateLongRange maximum="100" minimum="1"/>
+        </h:inputText>
+        <h:commandButton value="Dodaj książkę" type="submit" action="#{loggedView.addBook}"/>
+    </h:form>
+
+    <h3>Wypożycz książkę lub usuń:</h3>
+    <h:form>
+        Tytuł:
+        <h:selectOneMenu value="#{loggedView.pickedBook}" required="true">
+            <f:selectItems value="#{loggedView.books}" var="book" itemLabel="#{book.title}" itemValue="#{book.id}"/>
+        </h:selectOneMenu>
+        <h:selectOneMenu value="#{loggedView.numberOfDays}" required="true">
+            <f:selectItems value="#{loggedView.daysList}" var="val" itemLabel="#{val}" itemValue="#{val}"/>
+        </h:selectOneMenu>
+        <h:commandButton value="Wypożycz" type="submit" action="#{loggedView.addLoan}"/>
+        <h:commandButton value="Usuń" type="submit" action="#{loggedView.deleteBook}"/>
+    </h:form>
+
+    <br/>
+
+
+
+</h:body>
+</html>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<h:head>
+    <title>Ankieta</title>
+</h:head>
+
+<h:body id="main">
+    <h:form>
+        <h:panelGrid columns="2">
+            Imie:
+            <h:inputText id="nameInput" value="#{shop.name}" required="true" immediate="true" requiredMessage="Imie jest wymagane"/>
+            E-mail:
+            <h:inputText id="mailInput" value="#{shop.mail}" required="true" immediate="true" requiredMessage="Mail jest wymagany">
+                <f:validator validatorId="mailValidator" />
+            </h:inputText>
+            Wiek:
+            <h:inputText id="ageInput" value="#{shop.age}" immediate="true" validatorMessage="Wiek musi być między 10 a 100">
+                <f:validateLongRange minimum="10" maximum="100"/>
+            </h:inputText>
+            Płeć:
+            <h:selectOneRadio id="sexSelect" value="#{shop.sex}" required="true" requiredMessage="Płeć jest wymagana">
+                <f:selectItem itemValue="m" itemLabel="Mężczyzna"/>
+                <f:selectItem itemValue="f" itemLabel="Kobieta"/>
+                <f:ajax event="change" render="moreInfo" />
+            </h:selectOneRadio>
+            Wykształcenie:
+            <h:selectOneRadio id="educationSelect" value="#{shop.education}">
+                <f:selectItem itemValue="Podstawowe" itemLabel="Podstawowe"/>
+                <f:selectItem itemValue="Zawodowe" itemLabel="Zawodowe"/>
+                <f:selectItem itemValue="Wyższe" itemLabel="Wyższe"/>
+            </h:selectOneRadio>
+            Wzrost:
+            <h:inputText id="heightInput" value="#{shop.height}" immediate="true" size="3" validatorMessage="Wzrost dla kobiet 150-185, dla mężczyzn 165-200">
+                <f:validateLongRange minimum="150" maximum="185" disabled="#{shop.sex.equals('m')}"/>
+                <f:validateLongRange minimum="165" maximum="200" disabled="#{shop.sex.equals('f')}"/>
+            </h:inputText>
+            <h:panelGroup id="moreInfo">
+                <h:panelGrid columns="2">
+                    <h:outputText value="Obwód biustu:" rendered="#{shop.sex.equals('f')}" />
+                    <h:inputText id="bustInput" size="3" value="#{shop.bust}" rendered="#{shop.sex.equals('f')}" converterMessage="Obwód biustu musi być liczba!"/>
+                    <h:outputText value="Rozmiar miseczki:" rendered="#{shop.sex.equals('f')}" />
+                    <h:inputText id="cupInput" value="#{shop.cup}" size="1" rendered="#{shop.sex.equals('f')}" validatorMessage="Rozmiar musi być literą!">
+                        <f:validateRegex pattern="[a-zA-Z]{1}"/>
+                    </h:inputText>
+                    <h:outputText value="Obwód biodra:" rendered="#{shop.sex.equals('f')}" />
+                    <h:inputText id="hipsInput" size="3" value="#{shop.hips}" rendered="#{shop.sex.equals('f')}" converterMessage="Obwód biodra musi być liczba!"/>
+                    <h:outputText value="Obwód w talii:" rendered="#{shop.sex.equals('f')}" />
+                    <h:inputText id="waistFemaleInput" size="3" value="#{shop.waistFemale}" rendered="#{shop.sex.equals('f')}" converterMessage="Obwód talii musi być liczba!"/>
+                    <h:outputText value="Obwód klatki:" rendered="#{shop.sex.equals('m')}" />
+                    <h:inputText id="chestInput" size="3" value="#{shop.chest}" rendered="#{shop.sex.equals('m')}" converterMessage="Obwód klatki musi być liczba!"/>
+                    <h:outputText value="Obwód w pasie:" rendered="#{shop.sex.equals('m')}" />
+                    <h:inputText id="waistMaleInput" size="3" value="#{shop.waistMale}" rendered="#{shop.sex.equals('m')}" converterMessage="Obwód pasa musi być liczba!"/>
+                </h:panelGrid>
+            </h:panelGroup>
+        </h:panelGrid>
+        <h:commandButton id="validateButton" value="Dalej" type="submit">
+            <f:ajax event="click" execute="@form" render="messages :questions-wrapper" listener="#{shop.setValid(true)}"/>
+        </h:commandButton>
+    </h:form>
+    <h:messages id="messages" style="color: red">
+        <h:message for="mailInput" style="color: red"/>
+        <h:message for="nameInput" style="color: red"/>
+        <h:message for="ageInput"  style="color: red"/>
+        <h:message for="sexSelect" style="color: red"/>
+    </h:messages>
+        <h:panelGroup id="questions-wrapper">
+            <h:form rendered="#{shop.valid}">
+                <h:panelGrid columns="2">
+                    Ile jesteś w stanie przeznaczyć miesięcznie na zakup ubrania?
+                    <h:selectOneMenu id="selectQuest1" value="#{shop.question1}" >
+                        <f:selectItem itemValue="Mniej niż 100" itemLabel="Mniej niż 100 zł"/>
+                        <f:selectItem itemValue="100 - 500" itemLabel="100-500 zł"/>
+                        <f:selectItem itemValue="500 - 1000" itemLabel="500-1000 zł"/>
+                        <f:selectItem itemValue="Więcej niż 1000" itemLabel="Więcej niż 1000 zł"/>
+                    </h:selectOneMenu>
+                    Jak często dokonujesz zakupu ubrania?
+                    <h:selectOneMenu id="selectQuest2" value="#{shop.question2}" >
+                        <f:selectItem itemValue="Codziennie" itemLabel="Codziennie"/>
+                        <f:selectItem itemValue="Raz w tygodniu" itemLabel="Raz w tygodniu"/>
+                        <f:selectItem itemValue="Raz w miesiącu" itemLabel="Raz w miesiącu"/>
+                        <f:selectItem itemValue="Kilka razy w roku" itemLabel="Kilka razy w roku"/>
+                    </h:selectOneMenu>
+                    W jakich kolorach preferujesz ubrania?
+                    <h:selectOneMenu id="selectQuest3" value="#{shop.question3}" >
+                        <f:selectItem itemValue="Kolorowo-jaskrawe" itemLabel="Kolorowo-jaskrawych"/>
+                        <f:selectItem itemValue="Szare" itemLabel="Stonowanych w szarościach"/>
+                        <f:selectItem itemValue="Czarno-białe" itemLabel="W czerni i bieli"/>
+                        <f:selectItem itemValue="Czarne" itemLabel="W samej czerni"/>
+                    </h:selectOneMenu>
+                    Jakiego rodzaju ubrania najchetniej kupujesz?
+                    <h:selectManyCheckbox id="selectQuest4Male" value="#{shop.question4}" rendered="#{shop.sex.equals('m')}">
+                        <f:selectItems value="#{shop.question4AnsMale}"/>
+                    </h:selectManyCheckbox>
+                    <h:selectManyCheckbox id="selectQuest4Female" value="#{shop.question4}" rendered="#{shop.sex.equals('f')}">
+                        <f:selectItems value="#{shop.question4AnsFemale}"/>
+                    </h:selectManyCheckbox>
+                </h:panelGrid>
+                <h:commandButton id="submitButton" value="Wyślij" type="submit" action="podsumowanie"/>
+            </h:form>
+        </h:panelGroup>
+
+</h:body>
+
+</html>
