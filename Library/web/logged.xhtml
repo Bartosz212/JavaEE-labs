@@ -102,13 +102,91 @@
         <h:selectOneMenu value="#{loggedView.numberOfDays}" required="true">
             <f:selectItems value="#{loggedView.daysList}" var="val" itemLabel="#{val}" itemValue="#{val}"/>
         </h:selectOneMenu>
+        <h:inputText value="#{loggedView.editTitle}"/>
         <h:commandButton value="Wypożycz" type="submit" action="#{loggedView.addLoan}"/>
+        <h:commandButton value="Edytuj" type="submit" action="#{loggedView.editBook}"/>
         <h:commandButton value="Usuń" type="submit" action="#{loggedView.deleteBook}"/>
     </h:form>
 
     <br/>
 
+    <h3>Wyszukiwarka</h3>
+    <h:form>
+        Autor:
+        <h:selectOneMenu value="#{loggedView.pickedAuthor}" required="true">
+            <f:selectItems value="#{loggedView.authors}" var="author" itemLabel="#{author.fullName}" itemValue="#{author.id}"/>
+        </h:selectOneMenu>
+        Książka:
+        <h:selectOneMenu value="#{loggedView.pickedBook}" required="true">
+            <f:selectItems value="#{loggedView.books}" var="book" itemLabel="#{book.title}" itemValue="#{book.id}"/>
+        </h:selectOneMenu>
+        Od(yy-mm-dd):
+        <h:inputText id="fromDate" value="#{loggedView.filterFromDate}">
+            <f:convertDateTime pattern="yy-MM-dd"/>
+        </h:inputText>
+        Do(yy-mm-dd):
+        <h:inputText id="toDate" value="#{loggedView.filterToDate}">
+            <f:convertDateTime pattern="yy-MM-dd"/>
+        </h:inputText>
+        Wyszukuj z datami:
+        <h:selectBooleanCheckbox value="#{loggedView.checkWithDates}"/>
+        <h:commandButton type="submit" value="Wyszukaj użytkowników po książce" action="#{loggedView.searchUsersByBook}"/>
+        <h:commandButton type="submit" value="Wyszukaj użytkowników po autorze" action="#{loggedView.searchUsersByAuthor}"/>
+    </h:form>
 
+    <h:dataTable value="#{loggedView.filteredUsers}" var="users" styleClass="order-table"
+                 headerClass="order-table-header"
+                 rowClasses="order-table-odd-row,order-table-even-row" style="border-spacing: 8px">
 
+    <h:column>
+        <f:facet name="header">Użytkownicy</f:facet>
+        #{users.fullName}
+    </h:column>
+    </h:dataTable>
+
+    <h:form>
+        Użytkownik:
+        <h:selectOneMenu value="#{loggedView.pickedUser}" required="true">
+            <f:selectItems value="#{loggedView.libraryUsers}" var="user" itemLabel="#{user.fullName}" itemValue="#{user.id}"/>
+        </h:selectOneMenu>
+        Od(yy-mm-dd):
+        <h:inputText id="fromDate2" value="#{loggedView.filterFromDate}">
+            <f:convertDateTime pattern="yy-MM-dd"/>
+        </h:inputText>
+        Do(yy-mm-dd):
+        <h:inputText id="toDate2" value="#{loggedView.filterToDate}">
+            <f:convertDateTime pattern="yy-MM-dd"/>
+        </h:inputText>
+        Wyszukuj z datami:
+        <h:selectBooleanCheckbox value="#{loggedView.checkWithDates}"/>
+        <h:commandButton type="submit" value="Wyszukaj autorów czytanych przez użytkownika" action="#{loggedView.searchAuthorsByUser}"/>
+    </h:form>
+
+    <h:dataTable value="#{loggedView.filteredAuthors}" var="authors" styleClass="order-table"
+                 headerClass="order-table-header"
+                 rowClasses="order-table-odd-row,order-table-even-row" style="border-spacing: 8px">
+
+        <h:column>
+            <f:facet name="header">Autorzy</f:facet>
+            #{authors.fullName}
+        </h:column>
+    </h:dataTable>
+
+    <h:form>
+        <h:commandButton type="submit" value="Wyszukaj ile razy byli czytani autorzy" action="#{loggedView.getAuthorsWithCounter}"/>
+    </h:form>
+    <h:dataTable value="#{loggedView.authorsListWithCounter}" var="object" styleClass="order-table"
+                 headerClass="order-table-header"
+                 rowClasses="order-table-odd-row,order-table-even-row" style="border-spacing: 8px">
+        <h:column>
+            <f:facet name="header">Autorzy</f:facet>
+            #{object[0].fullName}
+        </h:column>
+
+        <h:column>
+            <f:facet name="header">Ilość wypożyczeń</f:facet>
+            #{object[1]}
+        </h:column>
+    </h:dataTable>
 </h:body>
 </html>

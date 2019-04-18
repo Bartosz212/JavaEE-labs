@@ -9,6 +9,7 @@ import pl.agh.soa.entities.Book;
 import pl.agh.soa.entities.LibraryUser;
 import pl.agh.soa.entities.Loan;
 
+import java.util.Date;
 import java.util.List;
 
 public class Controller {
@@ -177,5 +178,93 @@ public class Controller {
         }catch (Exception e){
             System.out.println("Controller(endLoans): "+ e.getMessage());
         }
+    }
+
+    public List<LibraryUser> searchUsersByBook(int pickedBook, Date filterFromDate, Date filterToDate) {
+        List<LibraryUser> users = null;
+        try{
+            Book book = bookDAO.getBookByID(pickedBook);
+            users = loanDAO.getUsersByBookWithDates(book, filterFromDate, filterToDate);
+        }catch (Exception e){
+            System.out.println("Controller(searchUsersByBook-dates): "+ e.getMessage());
+        }
+        return users;
+    }
+
+    public List<LibraryUser> searchUsersByBook(int pickedBook) {
+        List<LibraryUser> users = null;
+        try{
+            Book book = bookDAO.getBookByID(pickedBook);
+            users = loanDAO.getUsersByBook(book);
+        }catch (Exception e){
+            System.out.println("Controller(searchUsersByBook-noDates): "+ e.getMessage());
+        }
+        return users;
+    }
+
+    public List<LibraryUser> searchUsersByAuthor(int pickedAuthor, Date filterFromDate, Date filterToDate) {
+        List<LibraryUser> users = null;
+        try{
+            Author author = authorDAO.getAuthor(pickedAuthor);
+            List<Book> books = bookDAO.getAllAuthorBooks(author);
+            users = loanDAO.getUsersByBooksWithDates(books, filterFromDate, filterToDate);
+        }catch (Exception e){
+            System.out.println("Controller(searchUsersByAuthor-dates): "+ e.getMessage());
+        }
+        return users;
+    }
+
+    public List<LibraryUser> searchUsersByAuthor(int pickedAuthor) {
+        List<LibraryUser> users = null;
+        try{
+            Author author = authorDAO.getAuthor(pickedAuthor);
+            List<Book> books = bookDAO.getAllAuthorBooks(author);
+            users = loanDAO.getUsersByBooks(books);
+        }catch (Exception e){
+            System.out.println("Controller(searchUsersByAuthor-noDates): "+ e.getMessage());
+        }
+        return users;
+    }
+
+    public List<Author> searchAuthorsByUser(int pickedUser, Date filterFromDate, Date filterToDate) {
+        List<Author> authors = null;
+        try {
+            LibraryUser libraryUser = userDAO.getUser(pickedUser);
+            List<Book> books = loanDAO.getBooksByUser(libraryUser, filterFromDate, filterToDate);
+            authors = bookDAO.getAuthorsByBooks(books);
+        }catch (Exception e){
+            System.out.println("Controller(searchAuthorsByUser-dates): "+e.getMessage());
+        }
+        return authors;
+    }
+
+    public List<Author> searchAuthorsByUser(int pickedUser) {
+        List<Author> authors = null;
+        try {
+            LibraryUser libraryUser = userDAO.getUser(pickedUser);
+            List<Book> books = loanDAO.getBooksByUser(libraryUser);
+            authors = bookDAO.getAuthorsByBooks(books);
+        }catch (Exception e){
+            System.out.println("Controller(searchAuthorsByUser-noDates): "+e.getMessage());
+        }
+        return authors;
+    }
+
+    public void updateBook(int pickedBook, String editTitle) {
+        try{
+            bookDAO.updateBook(pickedBook, editTitle);
+        }catch (Exception e){
+            System.out.println("Controller(updateBook): "+e.getMessage());
+        }
+    }
+
+    public List<Object[]> getAuthorsWithCounter() {
+        List<Object[]> list = null;
+        try{
+            list = loanDAO.getLoanedAuthors();
+        }catch (Exception e){
+            System.out.println("Controller(getAuthorsListWithCounter): "+e.getMessage());
+        }
+        return list;
     }
 }

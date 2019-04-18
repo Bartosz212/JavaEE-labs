@@ -4,6 +4,7 @@ package pl.agh.soa.view;
 import pl.agh.soa.controller.Controller;
 import pl.agh.soa.entities.Author;
 import pl.agh.soa.entities.Book;
+import pl.agh.soa.entities.LibraryUser;
 import pl.agh.soa.entities.Loan;
 
 import javax.faces.bean.ManagedBean;
@@ -11,10 +12,7 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -28,6 +26,9 @@ public class LoggedView implements Serializable {
     private List<Author> authors;
     private List<Book> books;
     private List<Loan> loans;
+    private List<LibraryUser> libraryUsers;
+    private List<LibraryUser> filteredUsers;
+    private List<Author> filteredAuthors;
     private Map<Integer, Boolean> checked = new HashMap<Integer, Boolean>();
 
     private String authorName;
@@ -35,16 +36,59 @@ public class LoggedView implements Serializable {
 
     private String editName;
     private String editSurname;
+    private String editTitle;
 
     private int pickedAuthor;
     private int pickedBook;
+    private int pickedUser;
     private String title;
     private Integer numberOfBooks;
     private Integer numberOfDays;
 
+    private Date filterFromDate;
+    private Date filterToDate;
+    private Boolean checkWithDates;
+
+    private List<Object[]> authorsListWithCounter;
+
+
     private List<Integer> daysList = IntStream.rangeClosed(5, 30).boxed().collect(Collectors.toList());
 
-    Controller controller = new Controller();
+    private Controller controller = new Controller();
+
+    public void getAuthorsWithCounter(){
+        setAuthorsListWithCounter(controller.getAuthorsWithCounter());
+    }
+
+    public void editBook(){
+        if(!editTitle.equals("")) {
+            controller.updateBook(pickedBook, editTitle);
+        }
+    }
+
+    public void searchAuthorsByUser(){
+        if(checkWithDates && filterFromDate != null && filterToDate != null){
+            setFilteredAuthors(controller.searchAuthorsByUser(pickedUser, filterFromDate, filterToDate));
+        }else{
+            setFilteredAuthors(controller.searchAuthorsByUser(pickedUser));
+        }
+    }
+
+    public void searchUsersByBook(){
+        if(checkWithDates && filterFromDate != null && filterToDate != null){
+            setFilteredUsers(controller.searchUsersByBook(pickedBook, filterFromDate, filterToDate));
+        }else{
+            setFilteredUsers(controller.searchUsersByBook(pickedBook));
+        }
+    }
+
+    public void searchUsersByAuthor(){
+        if(checkWithDates && filterFromDate != null && filterToDate != null){
+            setFilteredUsers(controller.searchUsersByAuthor(pickedAuthor, filterFromDate, filterToDate));
+        }else{
+            setFilteredUsers(controller.searchUsersByAuthor(pickedAuthor));
+        }
+    }
 
     public void endLoans(){
         List<Integer> checkedLoansID = new ArrayList<>();
@@ -81,6 +125,15 @@ public class LoggedView implements Serializable {
 
     public String getAuthorFullNameByBookID(int id){
         return controller.getAuthorFullNameByBookID(id);
+    }
+
+    public List<LibraryUser> getLibraryUsers() {
+        setLibraryUsers(controller.getUsers());
+        return libraryUsers;
+    }
+
+    public void setLibraryUsers(List<LibraryUser> libraryUsers) {
+        this.libraryUsers = libraryUsers;
     }
 
     public List<Book> getBooks(){
@@ -215,5 +268,69 @@ public class LoggedView implements Serializable {
 
     public void setChecked(Map<Integer, Boolean> checked) {
         this.checked = checked;
+    }
+
+    public Date getFilterFromDate() {
+        return filterFromDate;
+    }
+
+    public void setFilterFromDate(Date filterFromDate) {
+        this.filterFromDate = filterFromDate;
+    }
+
+    public Date getFilterToDate() {
+        return filterToDate;
+    }
+
+    public void setFilterToDate(Date filterToDate) {
+        this.filterToDate = filterToDate;
+    }
+
+    public Boolean getCheckWithDates() {
+        return checkWithDates;
+    }
+
+    public void setCheckWithDates(Boolean checkWithDates) {
+        this.checkWithDates = checkWithDates;
+    }
+
+    public List<LibraryUser> getFilteredUsers() {
+        return filteredUsers;
+    }
+
+    public void setFilteredUsers(List<LibraryUser> filteredUsers) {
+        this.filteredUsers = filteredUsers;
+    }
+
+    public List<Author> getFilteredAuthors() {
+        return filteredAuthors;
+    }
+
+    public void setFilteredAuthors(List<Author> filteredAuthors) {
+        this.filteredAuthors = filteredAuthors;
+    }
+
+    public int getPickedUser() {
+        return pickedUser;
+    }
+
+    public void setPickedUser(int pickedUser) {
+        this.pickedUser = pickedUser;
+    }
+
+    public String getEditTitle() {
+        return editTitle;
+    }
+
+    public void setEditTitle(String editTitle) {
+        this.editTitle = editTitle;
+    }
+
+    public List<Object[]> getAuthorsListWithCounter() {
+        return authorsListWithCounter;
+    }
+
+    public void setAuthorsListWithCounter(List<Object[]> authorsListWithCounter) {
+        this.authorsListWithCounter = authorsListWithCounter;
     }
 }
