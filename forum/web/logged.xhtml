@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head/>
+
+<f:view>
+    <h1>Witaj w forum</h1>
+</f:view>
+
+<h:body>
+    <!--CONSUMER PART-->
+    <h:outputText value="Hello #{consumerBean.userFullName}!"/>
+
+    <p:messages id="messages" showDetail="true" closable="true">
+        <p:autoUpdate />
+    </p:messages>
+
+    <h2>SUB/UNSUB</h2>
+    <h:form id="table">
+        <h:selectOneMenu value="#{consumerBean.pickedTopic}" required="true">
+            <f:selectItems value="#{consumerBean.topics}" var="topic" itemLabel="#{topic}" itemValue="#{topic}"/>
+        </h:selectOneMenu>
+        <h:column headerText="Subscribe/Unsubscribe">
+            <h:commandButton value="Subscribe" update="table" action="#{consumerBean.performSub()}" process="@this"/>
+        </h:column>
+    </h:form>
+
+
+    <h3>Messages</h3>
+    <h:form id="panel">
+        <h:dataTable var="message" value="#{consumerBean.messages}">
+            <h:column headerText="Message">
+                <h:outputText value="#{message}"/>
+            </h:column>
+        </h:dataTable>
+        <br/>
+        <p:poll interval="3" listener="#{consumerBean.refresh()}" process="@this" update="panel" />
+        <h:commandButton value="Reset output" update="panel" process="@this" action="#{consumerBean.resetOutput()}"/>
+        <h:commandButton value="Refresh" update="panel table" process="@this" action="#{consumerBean.refresh()}"/>
+    </h:form>
+
+    <!--PRODUCER PART-->
+
+    <h3>New topic</h3>
+    <h:form>
+        <h:panelGroup>
+            <h:panelGrid columns="3">
+                Add new topic:
+                <h:inputText id="newTopicName" value="#{producerBean.newTopicName}" required="true"
+                                            requiredMessage="Provide topic name"/>
+                <h:commandButton value="Register" action="#{producerBean.addTopic()}"/>
+                <h:message for="newTopicName" style="color: red"/>
+            </h:panelGrid>
+        </h:panelGroup>
+    </h:form>
+
+    <h:form>
+        <h2>Send dir Mess</h2>
+        <h:panelGroup>
+            <h:panelGrid columns="2">
+                Message:
+                <h:inputText value="#{producerBean.message}" required="true"/>
+
+                User:
+                <h:inputText value="#{producerBean.subscribers}"/>
+            </h:panelGrid>
+        </h:panelGroup>
+
+        <br/><br/>
+
+        <table>
+            <thead>
+            <tr>
+                <th>Topic</th>
+            </tr>
+            </thead>
+            <tbody>
+            <ui:repeat value="#{producerBean.topics}" var="topic">
+                <tr>
+                    <td>#{topic}</td>
+                    <td><h:commandButton value="Send direct message" action="#{producerBean.sendDirectMessage(topic)}"/></td>
+                    <td><h:commandButton value="Send for all" action="#{producerBean.sendMessage(topic)}"/></td>
+                </tr>
+            </ui:repeat>
+            </tbody>
+        </table>
+    </h:form>
+
+</h:body>
+</html>

@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head/>
+<f:view>
+    <h1>Witaj w bibliotece</h1>
+</f:view>
+
+<h:body>
+    <h:form>
+        <p:messages id="messages" showDetail="true" closable="true">
+            <p:autoUpdate/>
+        </p:messages>
+    </h:form>
+
+    <br/>
+    <h2>Zalogowany jako: #{loggedView.userFullName} </h2>
+
+    <h3>Log Twoich wypożyczeń:</h3>
+    <h:form>
+        <h:dataTable value="#{loggedView.loans}" var="loan" styleClass="order-table"
+                     headerClass="order-table-header"
+                     rowClasses="order-table-odd-row,order-table-even-row" style="border-spacing: 8px">
+
+            <h:column>
+                <f:facet name="header">Tytuł</f:facet>
+                #{loggedView.getBookTitle(loan.bookID.id)}
+            </h:column>
+
+            <h:column>
+                <f:facet name="header">Autor</f:facet>
+                #{loggedView.getAuthorFullNameByBookID(loan.bookID.id)}
+            </h:column>
+
+
+            <h:column>
+                <f:facet name="header">Od</f:facet>
+                #{loan.formattedLoanDate}
+            </h:column>
+
+            <h:column>
+                <f:facet name="header">Do</f:facet>
+                #{loan.formattedReturnDate}
+            </h:column>
+
+            <h:column>
+                <f:facet name="header">Status</f:facet>
+                #{loan.getStatus()}
+            </h:column>
+
+            <h:column>
+                <f:facet name="header">Zakończ</f:facet>
+                <h:selectBooleanCheckbox value="#{loggedView.checked[loan.id]}" disabled="#{!loan.loaned}"/>
+            </h:column>
+        </h:dataTable>
+        <h:commandButton value="Zakończ wypożyczenie" type="submit" action="#{loggedView.endLoans}"/>
+    </h:form>
+
+    <br/>
+    <h3>Messages</h3>
+    <h:form id="panel">
+        <h:dataTable var="message" value="#{loggedView.messages}">
+            <h:column headerText="Message">
+                <h:outputText value="#{message}"/>
+            </h:column>
+        </h:dataTable>
+        <br/>
+        <p:poll interval="3" listener="#{loggedView.refresh()}" process="@this" update="panel" />
+        <h:commandButton value="Refresh" update="panel table" process="@this" action="#{loggedView.refresh()}"/>
+    </h:form>
+    <br/>
+
+    <h3>Zasubskrybuj niedostępną aktualnie pozycję</h3>
+    <h:form id="unavailable">
+        Tytuł:
+        <h:selectOneMenu value="#{loggedView.pickedSubscribeBook}" required="true">
+            <f:selectItems value="#{loggedView.unavailableBooks}" var="book" itemLabel="#{book.title}" itemValue="#{book.title}"/>
+        </h:selectOneMenu>
+        <p:poll interval="3" process="@this" update="unavailable" />
+        <h:commandButton value="Zasubskrybuj książkę" type="submit" action="#{loggedView.subscribeBook}"/>
+    </h:form>
+
+    <h3>Wypożycz książkę lub usuń:</h3>
+    <h:form>
+        Tytuł:
+        <h:selectOneMenu value="#{loggedView.pickedBook}" required="true">
+            <f:selectItems value="#{loggedView.books}" var="book" itemLabel="#{book.title}" itemValue="#{book.id}"/>
+        </h:selectOneMenu>
+        <h:selectOneMenu value="#{loggedView.numberOfDays}" required="true">
+            <f:selectItems value="#{loggedView.daysList}" var="val" itemLabel="#{val}" itemValue="#{val}"/>
+        </h:selectOneMenu>
+        <h:inputText value="#{loggedView.editTitle}"/>
+        <h:commandButton value="Wypożycz" type="submit" action="#{loggedView.addLoan}"/>
+        <h:commandButton value="Edytuj" type="submit" action="#{loggedView.editBook}"/>
+        <h:commandButton value="Usuń" type="submit" action="#{loggedView.deleteBook}"/>
+    </h:form>
+
+    <br/>
+
+    <h3>Dodaj autora:</h3>
+    <h:form>
+        Imie autora:
+        <h:inputText id="name" value="#{loggedView.authorName}" required="true" requiredMessage="Pole jest wymagane"/>
+        Nazwisko autora:
+        <h:inputText id="surname" value="#{loggedView.authorSurname}" required="true" requiredMessage="Pole jest wymagane"/>
+
+        <h:commandButton value="Dodaj" type="submit" action="#{loggedView.addAuthor}"/>
+    </h:form>
+
+    <h3>Usuń lub edytuj autora:</h3>
+    <h:form>
+        <h:selectOneMenu value="#{loggedView.pickedAuthor}" required="true">
+            <f:selectItems value="#{loggedView.authors}" var="author" itemLabel="#{author.fullName}" itemValue="#{author.id}"/>
+        </h:selectOneMenu>
+        Edytuj imię:
+        <h:inputText id="editName" value="#{loggedView.editName}"/>
+        Edytuj nazwisko:
+        <h:inputText id="editSurname" value="#{loggedView.editSurname}"/>
+        <h:commandButton value="Usuń" type="submit" action="#{loggedView.deleteAuthor}"/>
+        <h:commandButton value="Edytuj" type="submit" action="#{loggedView.editAuthor}"/>
+    </h:form>
+
+    <h3>Dodaj ksiazkę:</h3>
+    <h:form>
+        Autor:
+        <h:selectOneMenu value="#{loggedView.pickedAuthor}" required="true">
+            <f:selectItems value="#{loggedView.authors}" var="author" itemLabel="#{author.fullName}" itemValue="#{author.id}"/>
+        </h:selectOneMenu>
+        Tytuł:
+        <h:inputText id="title" value="#{loggedView.title}" required="true" requiredMessage="Pole jest wymagane"/>
+        Ilość egzemplarzy:
+        <h:inputText id="number" value="#{loggedView.numberOfBooks}" required="true" requiredMessage="Pole jest wymagane">
+            <f:validateLongRange maximum="100" minimum="1"/>
+        </h:inputText>
+        <h:commandButton value="Dodaj książkę" type="submit" action="#{loggedView.addBook}"/>
+    </h:form>
+
+
+    <br/>
+
+    <h3>Wyszukiwarka</h3>
+    <h:form>
+        Autor:
+        <h:selectOneMenu value="#{loggedView.pickedAuthor}" required="true">
+            <f:selectItems value="#{loggedView.authors}" var="author" itemLabel="#{author.fullName}" itemValue="#{author.id}"/>
+        </h:selectOneMenu>
+        Książka:
+        <h:selectOneMenu value="#{loggedView.pickedBook}" required="true">
+            <f:selectItems value="#{loggedView.books}" var="book" itemLabel="#{book.title}" itemValue="#{book.id}"/>
+        </h:selectOneMenu>
+        Od(yy-mm-dd):
+        <h:inputText id="fromDate" value="#{loggedView.filterFromDate}">
+            <f:convertDateTime pattern="yy-MM-dd"/>
+        </h:inputText>
+        Do(yy-mm-dd):
+        <h:inputText id="toDate" value="#{loggedView.filterToDate}">
+            <f:convertDateTime pattern="yy-MM-dd"/>
+        </h:inputText>
+        Wyszukuj z datami:
+        <h:selectBooleanCheckbox value="#{loggedView.checkWithDates}"/>
+        <h:commandButton type="submit" value="Wyszukaj użytkowników po książce" action="#{loggedView.searchUsersByBook}"/>
+        <h:commandButton type="submit" value="Wyszukaj użytkowników po autorze" action="#{loggedView.searchUsersByAuthor}"/>
+    </h:form>
+
+    <h:dataTable value="#{loggedView.filteredUsers}" var="users" styleClass="order-table"
+                 headerClass="order-table-header"
+                 rowClasses="order-table-odd-row,order-table-even-row" style="border-spacing: 8px">
+
+    <h:column>
+        <f:facet name="header">Użytkownicy</f:facet>
+        #{users.fullName}
+    </h:column>
+    </h:dataTable>
+
+    <h:form>
+        Użytkownik:
+        <h:selectOneMenu value="#{loggedView.pickedUser}" required="true">
+            <f:selectItems value="#{loggedView.libraryUsers}" var="user" itemLabel="#{user.fullName}" itemValue="#{user.id}"/>
+        </h:selectOneMenu>
+        Od(yy-mm-dd):
+        <h:inputText id="fromDate2" value="#{loggedView.filterFromDate}">
+            <f:convertDateTime pattern="yy-MM-dd"/>
+        </h:inputText>
+        Do(yy-mm-dd):
+        <h:inputText id="toDate2" value="#{loggedView.filterToDate}">
+            <f:convertDateTime pattern="yy-MM-dd"/>
+        </h:inputText>
+        Wyszukuj z datami:
+        <h:selectBooleanCheckbox value="#{loggedView.checkWithDates}"/>
+        <h:commandButton type="submit" value="Wyszukaj autorów czytanych przez użytkownika" action="#{loggedView.searchAuthorsByUser}"/>
+    </h:form>
+
+    <h:dataTable value="#{loggedView.filteredAuthors}" var="authors" styleClass="order-table"
+                 headerClass="order-table-header"
+                 rowClasses="order-table-odd-row,order-table-even-row" style="border-spacing: 8px">
+
+        <h:column>
+            <f:facet name="header">Autorzy</f:facet>
+            #{authors.fullName}
+        </h:column>
+    </h:dataTable>
+
+    <h:form>
+        <h:commandButton type="submit" value="Wyszukaj ile razy byli czytani autorzy" action="#{loggedView.getAuthorsWithCounter}"/>
+    </h:form>
+    <h:dataTable value="#{loggedView.authorsListWithCounter}" var="object" styleClass="order-table"
+                 headerClass="order-table-header"
+                 rowClasses="order-table-odd-row,order-table-even-row" style="border-spacing: 8px">
+        <h:column>
+            <f:facet name="header">Autorzy</f:facet>
+            #{object[0].fullName}
+        </h:column>
+
+        <h:column>
+            <f:facet name="header">Ilość wypożyczeń</f:facet>
+            #{object[1]}
+        </h:column>
+    </h:dataTable>
+</h:body>
+</html>

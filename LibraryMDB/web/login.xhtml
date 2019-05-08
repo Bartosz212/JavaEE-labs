@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<f:view>
+</f:view>
+
+<h:body>
+    <h1>Wybierz użytkownika:</h1>
+    <br/>
+    <h:form>
+        <h:selectOneMenu value="#{loginView.pickedUserID}" required="true">
+            <f:selectItems value="#{loginView.users}" var="user" itemLabel="#{user.getFullName()}" itemValue="#{user.id}"/>
+        </h:selectOneMenu>
+        Edytuj imię:
+        <h:inputText id="editName" value="#{loginView.editName}"/>
+        Edytuj nazwisko:
+        <h:inputText id="editSurname" value="#{loginView.editSurname}"/>
+        <h:commandButton value="Zaloguj" type="submit" action="#{loginView.logIn}"/>
+        <h:commandButton value="Usuń użytkownika" type="submit" action="#{loginView.deleteUser}"/>
+        <h:commandButton value="Edytuj użytkownika" type="submit" action="#{loginView.updateUser}"/>
+    </h:form>
+
+    <br/>
+    <br/>
+
+    <h1>Dodaj użytkownika:</h1>
+    <h:form>
+        Imie:
+        <h:inputText id="name" value="#{loginView.name}" required="true" requiredMessage="Pole jest wymagane"/>
+        Nazwisko:
+        <h:inputText id="surname" value="#{loginView.surname}" required="true" requiredMessage="Pole jest wymagane"/>
+        Chcesz otrzymywać powiadomienia o nowych ksiązkach?
+        <h:selectBooleanCheckbox id="sub" value="#{loginView.subscriber}"/>
+        <h:commandButton value="Dodaj" type="submit" action="#{loginView.addUser}"/>
+    </h:form>
+
+
+</h:body>
+</html>
